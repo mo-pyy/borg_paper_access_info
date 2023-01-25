@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <style>
+            html *
+            {
+                color: #000;
+                font-family: 'Courier New', monospace;
+            }
+
+        </style>
+    </head>
+    <body>
+        <h1>Borg backup on paper</h1>
+
+        <h2>ssh key</h2>
+        <h3>melt seed words</h3>
+        <p>{{ssh_key_melt}}</p>
+        <h3>private key as qr code</h3>
+        <img src="{{ssh_qrcode_image_path}}">
+
+        <h2>borg repo</h2>
+        <h3>url</h3>
+        <p>{{borg_repo_url}}</p>
+        <h3>ed25519 ssh fingerprint</h3>
+        <p>{{borg_repo_ssh_fingerprint}}</p>
+    </body>
+</html>

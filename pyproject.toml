@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "paper-backup"
+version = "0.0.1"
+requires-python = ">=3.11"
+dependencies = [
+  'Jinja2~=3.1.2',
+  'pdfkit~=1.0.0',
+  'qrcode~=7.3.1',
+  'click~=8.0.4'
+]
+
+[tool.isort]
+profile = "black"
+
