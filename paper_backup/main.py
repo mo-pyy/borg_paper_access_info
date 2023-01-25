@@ -9,7 +9,9 @@ from jinja2 import Environment, PackageLoader, select_autoescape
 
 
 def generate_pdf(html: str) -> str:
-    pdfkit.from_string(html, "out.pdf", options={"enable-local-file-access": None})
+    pdf_filepath = generate_tmp_file_path("borg_access_info.pdf")
+    pdfkit.from_string(html, pdf_filepath, options={"enable-local-file-access": None})
+    click.echo(f"Wrote pdf to file://{pdf_filepath}")
 
 
 def render_html(vars: dict) -> str:
@@ -20,12 +22,16 @@ def render_html(vars: dict) -> str:
     return template.render(**vars)
 
 
+def generate_tmp_file_path(filename: str):
+    uuid = uuid4()
+    return f"/tmp/{uuid}_{filename}"
+
+
 def create_ssh_qrcode(ssh_key_path: str) -> str:
     with open(ssh_key_path, "r") as f:
         ssh_private_key = f.read()
     img = qrcode.make(ssh_private_key)
-    uuid = uuid4()
-    img_path = f"/tmp/{uuid}_ssh_qrcode.png"
+    img_path = generate_tmp_file_path("_ssh_qrcode.png")
     img.save(img_path)
     return img_path
 
