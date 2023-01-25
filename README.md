@@ -4,7 +4,10 @@
 ```bash
 pip3 install .
 ```
-Also install [melt](https://github.com/charmbracelet/melt)
+Also install [melt](https://github.com/charmbracelet/melt) and [wkhtmltopdf](https://wkhtmltopdf.org/)
+```bash
+sudo apt install wkhtmltopdf
+```
 
 ## setup ssh
 Generate ed25519 ssh key without password
