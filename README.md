@@ -18,7 +18,7 @@ Grant access to your borg repo for this key in `append-only` mode.
 
 ## generate pdf with access information
 ```bash
-python3 -m paper_backup.main ~/.ssh/borg_access_key YOUR_BORG_REPO_URL YOUR_BORG_REPO_SSH_FINGERPRINT
+python3 -m borg_paper_access_info.main ~/.ssh/borg_access_key YOUR_BORG_REPO_URL YOUR_BORG_REPO_SSH_FINGERPRINT YOUR_BORG_REPO_PASSWORD
 ```
 
 ## print

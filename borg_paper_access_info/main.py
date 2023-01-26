@@ -20,7 +20,7 @@ def generate_pdf(html: str, debug=False) -> str:
 
 def render_html(vars: dict) -> str:
     env = Environment(
-        loader=PackageLoader("paper_backup"), autoescape=select_autoescape()
+        loader=PackageLoader("borg_paper_access_info"), autoescape=select_autoescape()
     )
     template = env.get_template("main.html")
     return template.render(**vars)
