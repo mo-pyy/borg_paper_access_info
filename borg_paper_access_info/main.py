@@ -1,13 +1,19 @@
-from importlib.resources import read_text
 from os import remove
-from subprocess import run
-from urllib.parse import urlparse
-from uuid import uuid4
 
 import click
 import pdfkit
-import qrcode
-from jinja2 import Environment, FunctionLoader, select_autoescape
+
+from borg_paper_access_info.html import render_html
+from borg_paper_access_info.ssh import (
+    create_ssh_key_melt,
+    create_ssh_qrcode,
+    create_ssh_randomart,
+)
+from borg_paper_access_info.utils import (
+    create_qrcode,
+    generate_tmp_file_path,
+    get_hostname_from_url,
+)
 
 
 def generate_pdf(html: str, debug=False) -> str:
@@ -19,65 +25,15 @@ def generate_pdf(html: str, debug=False) -> str:
     click.echo(f"Wrote pdf to file://{pdf_filepath}")
 
 
-def load_jinja_template(name: str) -> str:
-    if name == "main.html":
-        return read_text(__package__, "main.html")
-    else:
-        return None
-
-
-def render_html(vars: dict) -> str:
-    env = Environment(
-        loader=FunctionLoader(load_jinja_template), autoescape=select_autoescape()
-    )
-    template = env.get_template("main.html")
-    return template.render(**vars)
-
-
-def generate_tmp_file_path(filename: str) -> str:
-    uuid = uuid4()
-    return f"/tmp/{uuid}_{filename}"
-
-
-def create_ssh_qrcode(ssh_key_path: str) -> str:
-    with open(ssh_key_path, "r") as f:
-        ssh_private_key = f.read()
-    return create_qrcode(ssh_private_key, "ssh_qrcode.png")
-
-
-def create_qrcode(text: str, filename: str) -> str:
-    img = qrcode.make(text)
-    img_path = generate_tmp_file_path(filename)
-    img.save(img_path)
-    return img_path
-
-
-def create_ssh_key_melt(ssh_key_path: str) -> str:
-    result = run(f"melt {ssh_key_path}", shell=True, capture_output=True)
-    if result.returncode != 0:
-        raise click.ClickException(f"melt returned: {result.stderr.decode()}")
-    else:
-        return result.stdout.decode()
-
-
-def get_hostname_from_url(url: str) -> str:
-    return urlparse(url).hostname
-
-
-def create_ssh_randomart(hostname: str, host_fingerprint: str):
-    result = run(
-        ["bash", "-c", f"ssh-keygen -lv -f <(ssh-keyscan -t ed25519 {hostname})"],
-        capture_output=True,
-    )
-    output = result.stdout.decode()
-    lines = output.splitlines()
-    reported_fingerprint = lines[0].split(" ")[1]
-    if not reported_fingerprint == host_fingerprint:
-        raise click.ClickException(
-            f"ssh fingerprints did not match. user specified {host_fingerprint} but server reported {reported_fingerprint}"  # noqa: long string
-        )
-    else:
-        return "\n".join(lines[1:])
+def create_borg_repo_qrcode(
+    borg_repo_url: str, borg_repo_ssh_fingerprint: str, borg_repo_password: str
+) -> str:
+    borg_repo_info = {
+        "url": borg_repo_url,
+        "ssh_fingerprint": borg_repo_ssh_fingerprint,
+        "password": borg_repo_password,
+    }
+    return create_qrcode(borg_repo_info, "borg_repo_info.png")
 
 
 @click.command()
@@ -99,12 +55,9 @@ def generate(
     )
     ssh_key_melt = create_ssh_key_melt(ssh_key_path)
     ssh_qrcode_image_path = create_ssh_qrcode(ssh_key_path)
-    borg_repo_info = {
-        "url": borg_repo_url,
-        "ssh_fingerprint": borg_repo_ssh_fingerprint,
-        "password": borg_repo_password,
-    }
-    borg_repo_qrcode_image_path = create_qrcode(borg_repo_info, "borg_repo_info.png")
+    borg_repo_qrcode_image_path = create_borg_repo_qrcode(
+        borg_repo_url, borg_repo_ssh_fingerprint, borg_repo_password
+    )
     vars = {
         "borg_repo_url": borg_repo_url,
         "borg_repo_ssh_fingerprint": borg_repo_ssh_fingerprint,
