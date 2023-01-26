@@ -1,3 +1,4 @@
+from importlib.resources import read_text
 from os import remove
 from subprocess import run
 from urllib.parse import urlparse
@@ -6,7 +7,7 @@ from uuid import uuid4
 import click
 import pdfkit
 import qrcode
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import Environment, FunctionLoader, select_autoescape
 
 
 def generate_pdf(html: str, debug=False) -> str:
@@ -18,9 +19,16 @@ def generate_pdf(html: str, debug=False) -> str:
     click.echo(f"Wrote pdf to file://{pdf_filepath}")
 
 
+def load_jinja_template(name: str) -> str:
+    if name == "main.html":
+        return read_text(__package__, "main.html")
+    else:
+        return None
+
+
 def render_html(vars: dict) -> str:
     env = Environment(
-        loader=PackageLoader("borg_paper_access_info"), autoescape=select_autoescape()
+        loader=FunctionLoader(load_jinja_template), autoescape=select_autoescape()
     )
     template = env.get_template("main.html")
     return template.render(**vars)
