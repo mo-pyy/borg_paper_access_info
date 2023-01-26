@@ -10,26 +10,44 @@
             pre {
                 font-family: 'Courier New', Courier, monospace;
             }
-
+            h3 {
+                text-align: center;
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
+            u {
+                text-align: right;
+                width: 300px;
+                display: inline-block;
+            }
+            img {
+                width: 40%;
+                margin: auto;
+                display: block;
+            }
+            pre {
+                text-align: center;
+            }
         </style>
     </head>
     <body>
         <h1>Borg backup on paper</h1>
-
+        <h3>ssh key</h3> 
         <p>
-            <b>ssh key:</b> <br>
             <u>melt seed phrase:</u> {{ssh_key_melt}} <br>
             <u>keyfile:</u> <br>
             <img src="{{ssh_qrcode_image_path}}">
         </p>
 
+
+        <h3>borg repo</h3>
         <p>
-            <b>borg repo:</b> <br>
             <u>url:</u> {{borg_repo_url}} <br>
             <u>password:</u> {{borg_repo_password}} <br>
             <u>ssh fingerprint:</u> {{borg_repo_ssh_fingerprint}} <br>
-            <u>ssh fingerprint randomart:</u> <br>
+            <u>ssh fingerprint randomart:</u>
             <pre>{{borg_repo_ssh_fingerprint_randomart}}</pre>
+            <img style="width: 30%;" src="{{borg_repo_qrcode_image_path}}">
         </p>
     </body>
 </html>

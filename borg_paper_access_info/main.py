@@ -26,7 +26,7 @@ def render_html(vars: dict) -> str:
     return template.render(**vars)
 
 
-def generate_tmp_file_path(filename: str):
+def generate_tmp_file_path(filename: str) -> str:
     uuid = uuid4()
     return f"/tmp/{uuid}_{filename}"
 
@@ -34,8 +34,12 @@ def generate_tmp_file_path(filename: str):
 def create_ssh_qrcode(ssh_key_path: str) -> str:
     with open(ssh_key_path, "r") as f:
         ssh_private_key = f.read()
-    img = qrcode.make(ssh_private_key)
-    img_path = generate_tmp_file_path("ssh_qrcode.png")
+    return create_qrcode(ssh_private_key, "ssh_qrcode.png")
+
+
+def create_qrcode(text: str, filename: str) -> str:
+    img = qrcode.make(text)
+    img_path = generate_tmp_file_path(filename)
     img.save(img_path)
     return img_path
 
@@ -87,6 +91,12 @@ def generate(
     )
     ssh_key_melt = create_ssh_key_melt(ssh_key_path)
     ssh_qrcode_image_path = create_ssh_qrcode(ssh_key_path)
+    borg_repo_info = {
+        "url": borg_repo_url,
+        "ssh_fingerprint": borg_repo_ssh_fingerprint,
+        "password": borg_repo_password,
+    }
+    borg_repo_qrcode_image_path = create_qrcode(borg_repo_info, "borg_repo_info.png")
     vars = {
         "borg_repo_url": borg_repo_url,
         "borg_repo_ssh_fingerprint": borg_repo_ssh_fingerprint,
@@ -94,6 +104,7 @@ def generate(
         "ssh_key_melt": ssh_key_melt,
         "ssh_qrcode_image_path": ssh_qrcode_image_path,
         "borg_repo_ssh_fingerprint_randomart": randomart,
+        "borg_repo_qrcode_image_path": borg_repo_qrcode_image_path,
     }
     html = render_html(vars)
     if debug:
@@ -102,6 +113,7 @@ def generate(
     generate_pdf(html, debug)
     if not debug:
         remove(ssh_qrcode_image_path)
+        remove(borg_repo_qrcode_image_path)
 
 
 if __name__ == "__main__":
