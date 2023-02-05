@@ -24,3 +24,23 @@ See an example pdf with fake data here: [example.pdf](https://raw.githubuserco
 
 ## print
 Now print out the generated pdf and store it somewhere safe.
+
+## restoring
+You need to have borg, melt and ssh installed.  
+Restore the ssh key
+```bash
+melt restore ~/.ssh/borg_access_key --seed "MELT_SEED_PHRASE"
+```
+Check the ssh fingerprint of the borg repo
+```bash
+ssh -o VisualHostKey=yes -i ~/.ssh/borg_access_key borg_user@borg_hostname
+```
+Restore your files
+```bash
+export BORG_PASSPHRASE="BORG_PASSPHRASE"
+export BORG_RSH="ssh -i ~/.ssh/borg_access_key"
+export BORG_REPO="BORG_REPO_URL"
+borg list
+export BORG_ARCHIVE_NAME="ARCHIVE_TO_RESTORE"
+borg extract $BORG_REPO::$BORG_ARCHIVE_NAME
+```
