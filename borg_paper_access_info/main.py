@@ -26,12 +26,12 @@ def generate_pdf(html: str, debug=False) -> str:
 
 
 def create_borg_repo_qrcode(
-    borg_repo_url: str, borg_repo_ssh_fingerprint: str, borg_repo_password: str
+    borg_repo_url: str, borg_repo_ssh_fingerprint: str, borg_repo_passphrase: str
 ) -> str:
     borg_repo_info = {
         "url": borg_repo_url,
         "ssh_fingerprint": borg_repo_ssh_fingerprint,
-        "password": borg_repo_password,
+        "passphrase": borg_repo_passphrase,
     }
     return create_qrcode(borg_repo_info, "borg_repo_info.png")
 
@@ -40,13 +40,13 @@ def create_borg_repo_qrcode(
 @click.argument("ssh_key_path", type=click.Path(exists=True))
 @click.argument("borg_repo_url")
 @click.argument("borg_repo_ssh_fingerprint")
-@click.argument("borg_repo_password")
+@click.argument("borg_repo_passphrase")
 @click.option("--debug", is_flag=True, default=False)
 def generate(
     ssh_key_path: str,
     borg_repo_url: str,
     borg_repo_ssh_fingerprint: str,
-    borg_repo_password: str,
+    borg_repo_passphrase: str,
     debug: bool,
 ):
     """generate pdf with information to access you borg backup repo"""
@@ -56,12 +56,12 @@ def generate(
     ssh_key_melt = create_ssh_key_melt(ssh_key_path)
     ssh_qrcode_image_path = create_ssh_qrcode(ssh_key_path)
     borg_repo_qrcode_image_path = create_borg_repo_qrcode(
-        borg_repo_url, borg_repo_ssh_fingerprint, borg_repo_password
+        borg_repo_url, borg_repo_ssh_fingerprint, borg_repo_passphrase
     )
     vars = {
         "borg_repo_url": borg_repo_url,
         "borg_repo_ssh_fingerprint": borg_repo_ssh_fingerprint,
-        "borg_repo_password": borg_repo_password,
+        "borg_repo_passphrase": borg_repo_passphrase,
         "ssh_key_melt": ssh_key_melt,
         "ssh_qrcode_image_path": ssh_qrcode_image_path,
         "borg_repo_ssh_fingerprint_randomart": randomart,

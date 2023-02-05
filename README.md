@@ -18,7 +18,7 @@ Grant access to your borg repo for this key in `append-only` mode.
 
 ## generate pdf with access information
 ```bash
-borg_paper_access_info ~/.ssh/borg_access_key YOUR_BORG_REPO_URL YOUR_BORG_REPO_SSH_FINGERPRINT YOUR_BORG_REPO_PASSWORD
+borg_paper_access_info ~/.ssh/borg_access_key YOUR_BORG_REPO_URL YOUR_BORG_REPO_SSH_FINGERPRINT YOUR_BORG_REPO_PASSPHRASE
 ```
 See an example pdf with fake data here: [example.pdf](https://raw.githubusercontent.com/mo-pyy/borg_paper_access_info/main/examples/example.pdf)
 
